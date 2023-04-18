@@ -33,6 +33,7 @@ import javax.servlet.ServletRequest;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 
 public class NettyHttpServer extends ChannelInitializer<Channel> implements GenericFutureListener<Future<Void>>, Closeable
 {
@@ -121,6 +122,9 @@ public class NettyHttpServer extends ChannelInitializer<Channel> implements Gene
    {      
       ServerBootstrap bootstrap     = new ServerBootstrap();
       ChannelFuture   channelFuture = null;
+
+      if(servletContext != null && servletContext instanceof MockServletContext)
+         ((MockServletContext)servletContext).setContextPath(contextPath);
 
       try
       {
