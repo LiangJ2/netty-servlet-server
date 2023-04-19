@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.lj.netty</groupId>
   <artifactId>netty-servlet-server</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>com.lj.netty</name>
@@ -43,7 +43,7 @@
   </dependencies>
   
   <build>
-      <finalName>NettyServletServer1.0.1</finalName>
+      <finalName>NettyServletServer1.0.2</finalName>
       <plugins>
           <plugin>
               <groupId>org.springframework.boot</groupId>
