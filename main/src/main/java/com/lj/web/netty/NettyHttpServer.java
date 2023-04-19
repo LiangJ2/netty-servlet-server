@@ -34,9 +34,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.WebServerException;
-
 import com.lj.web.IHttpHandler;
 import com.lj.web.IHttpServer;
 
@@ -49,8 +46,7 @@ public class NettyHttpServer extends ChannelInitializer<Channel>
                              implements GenericFutureListener<Future<Void>>, IHttpServer, IHttpHandler<HttpRequest, Channel>
 {
    protected int             port        = 8080;
-   protected Object          sslContext  = null;
-   protected String          contextPath = null, sslProtocol = null;
+   protected String          contextPath = null;
    protected ServerBootstrap bootstrap   = null;
    
    protected final EventLoopGroup bossGroup   = new NioEventLoopGroup();
@@ -80,30 +76,6 @@ public class NettyHttpServer extends ChannelInitializer<Channel>
    }
    //---------------------------------------------------------------------------
    
-   public Object getSslContext()
-   {
-      return sslContext;
-   }
-   //---------------------------------------------------------------------------
-   
-   public void setSslContext(Object sslContext)
-   {
-      this.sslContext = sslContext;
-   }
-   //---------------------------------------------------------------------------
-   
-   public String getSslProtocol()
-   {
-      return sslProtocol;
-   }
-   //---------------------------------------------------------------------------
-
-   public void setSslProtocol(String sslProtocol)
-   {
-      this.sslProtocol = sslProtocol;
-   }
-   //---------------------------------------------------------------------------
-   
    public ServerBootstrap start(boolean autoWait) throws Exception
    {      
       ChannelFuture channelFuture = null;
@@ -127,7 +99,7 @@ public class NettyHttpServer extends ChannelInitializer<Channel>
             if(autoWait)
                channelFuture.channel().closeFuture().awaitUninterruptibly();
             else
-               channelFuture.channel().closeFuture().addListener(this); // new GenericFutureListener<Future<Void>>()
+               channelFuture.channel().closeFuture().addListener(this);
          }//--------End If--------
       }//--------End Try--------
       
@@ -181,21 +153,14 @@ public class NettyHttpServer extends ChannelInitializer<Channel>
    //---------------------------------------------------------------------------
    
    @Override
-   public void start() throws WebServerException
+   public void start() throws Exception
    {
-      try
-      {
-         start(false);
-      }
-      catch(Exception e)
-      {
-         throw new WebServerException(e.getMessage(), e);
-      }//--------End Try--------
+      start(false);
    }
    //---------------------------------------------------------------------------
 
    @Override
-   public void stop() throws WebServerException
+   public void stop() throws Exception
    {
       doClose();
    }
@@ -240,20 +205,6 @@ public class NettyHttpServer extends ChannelInitializer<Channel>
       if(Src != null)
          return GetIterator(Src.entrySet());
       return null;
-   }
-   //---------------------------------------------------------------------------
-
-   public static Class<?> GetClass(String ClassName)
-   {
-      Class<?> Result = null;
-      
-      if(Len(ClassName) > 0)
-      try
-      {
-         Result = Class.forName(ClassName);
-      } catch(Exception e) { }
-      
-      return Result;
    }
    //---------------------------------------------------------------------------
 }
