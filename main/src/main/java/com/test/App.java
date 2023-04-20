@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.lj.web.IConfigurableServletServer;
 import com.lj.web.IHttpServer;
 
 import com.lj.web.netty.NettyServletServer;
@@ -39,7 +40,7 @@ public class App extends HttpServlet
 
    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
    {
-      byte[] text = (request.getRequestURI() + " " + request.getMethod() + ": test ok. " + request.getParameterMap()).getBytes();
+      byte[] text = (httpServer.getPort() + " " + request.getRequestURI() + " " + request.getMethod() + ": test ok. " + request.getParameterMap()).getBytes();
       
       response.setContentLength(text.length);
       response.getOutputStream().write(text);
@@ -48,7 +49,7 @@ public class App extends HttpServlet
      
    public static IHttpServer CreateHttpServer(int port)
    {
-      NettyServletServer Result = new NettyServletServer();
+      IConfigurableServletServer Result = new NettyServletServer();
       
       Result.setPort(port);
       Result.setServletContext(new org.springframework.mock.web.MockServletContext());

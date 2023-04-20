@@ -45,7 +45,7 @@ public interface IHttpServer extends Closeable
    
    /**
     * Return the port this http server is listening on.
-    * @return the port (or -1 if 8080)
+    * @return the port (or 8080 if none)
     */
    int getPort();
    

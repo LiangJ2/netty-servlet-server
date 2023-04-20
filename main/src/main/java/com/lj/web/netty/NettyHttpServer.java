@@ -34,16 +34,16 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.lj.web.IConfigurableHttpServer;
 import com.lj.web.IHttpHandler;
-import com.lj.web.IHttpServer;
 
 /**
  * 
  * @author LiangJ2
  *
  */
-public class NettyHttpServer extends ChannelInitializer<Channel>
-                             implements GenericFutureListener<Future<Void>>, IHttpServer, IHttpHandler<HttpRequest, Channel>
+public class NettyHttpServer extends    ChannelInitializer<Channel>
+                             implements GenericFutureListener<Future<Void>>, IConfigurableHttpServer, IHttpHandler<HttpRequest, Channel>
 {
    protected int             port        = 8080;
    protected String          contextPath = null;
@@ -141,7 +141,7 @@ public class NettyHttpServer extends ChannelInitializer<Channel>
       if(future.getClass().getName().indexOf("CloseFuture") > 0)
          doClose();
       else
-         log("Netty server started. port=" + getPort());
+         log("Netty server started. port=" + getPort());      
    }
    //---------------------------------------------------------------------------
 

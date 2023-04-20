@@ -28,6 +28,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 
+import com.lj.web.IConfigurableServletServer;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
@@ -44,10 +46,10 @@ import io.netty.handler.codec.http.QueryStringDecoder;
  * @author LiangJ2
  *
  */
-public class NettyServletServer extends NettyHttpServer
+public class NettyServletServer extends NettyHttpServer implements IConfigurableServletServer
 {
-   protected Servlet         dispatcher     = null;
-   protected ServletContext  servletContext = null;
+   protected Servlet        dispatcher     = null;
+   protected ServletContext servletContext = null;
 
    public NettyServletServer()
    {
