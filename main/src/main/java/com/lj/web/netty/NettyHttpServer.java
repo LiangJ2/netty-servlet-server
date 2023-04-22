@@ -31,6 +31,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -46,7 +47,7 @@ public class NettyHttpServer extends    ChannelInitializer<Channel>
                              implements GenericFutureListener<Future<Void>>, IConfigurableHttpServer, IHttpHandler<HttpRequest, Channel>
 {
    protected int             port        = 8080;
-   protected String          contextPath = null;
+   protected String          contextPath = "";
    protected ServerBootstrap bootstrap   = null;
    
    protected final EventLoopGroup bossGroup   = new NioEventLoopGroup();
@@ -184,26 +185,54 @@ public class NettyHttpServer extends    ChannelInitializer<Channel>
    }
    //---------------------------------------------------------------------------
    
-   public static int Len(String Src)
-   {
-      if(Src == null)
-         return 0;
-      return Src.length();
+   public static boolean IsNull(Object src)
+   { 
+      return src == null;
    }
    //---------------------------------------------------------------------------
    
-   public static <T> Iterator<T> GetIterator(Iterable<T> Src)
+   public static boolean Assigned(Object src) 
+   { 
+      return IsNull(src) == false; 
+   }
+   //---------------------------------------------------------------------------
+   
+   public static int Len(byte[] src)
    {
-      if(Src != null)
-         return Src.iterator();
+      if(IsNull(src))
+         return 0;
+      return src.length;
+   }
+   //---------------------------------------------------------------------------
+   
+   public static int Len(Collection<?> src)
+   {
+      if(IsNull(src))
+         return 0;
+      return src.size();
+   }
+   //---------------------------------------------------------------------------
+   
+   public static int Len(CharSequence src)
+   {
+      if(IsNull(src))
+         return 0;
+      return src.length();
+   }
+   //---------------------------------------------------------------------------
+   
+   public static <T> Iterator<T> GetIterator(Iterable<T> src)
+   {
+      if(Assigned(src))
+         return src.iterator();
       return null;
    }
    //---------------------------------------------------------------------------
    
-   public static <K, V> Iterator<Map.Entry<K, V>> GetIterator(Map<K, V> Src)
+   public static <K, V> Iterator<Map.Entry<K, V>> GetIterator(Map<K, V> src)
    {
-      if(Src != null)
-         return GetIterator(Src.entrySet());
+      if(Assigned(src))
+         return GetIterator(src.entrySet());
       return null;
    }
    //---------------------------------------------------------------------------

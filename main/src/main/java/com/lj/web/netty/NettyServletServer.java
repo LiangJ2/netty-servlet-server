@@ -83,7 +83,7 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
    
    public ServerBootstrap start(boolean autoWait) throws Exception
    {
-      if(servletContext != null && servletContext instanceof MockServletContext)
+      if(Assigned(servletContext) && servletContext instanceof MockServletContext)
          ((MockServletContext)servletContext).setContextPath(contextPath);
 
       return super.start(autoWait);
@@ -92,7 +92,7 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
    
    public void log(String text)
    {
-      if(servletContext == null)
+      if(IsNull(servletContext))
          super.log(text);
       else
          servletContext.log(text);
@@ -101,27 +101,51 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
    
    public void handle(HttpRequest request, Channel channel) throws Exception
    {      
-      if(dispatcher != null)
+      if(Assigned(dispatcher))
       {
          MockHttpServletResponse response = new MockHttpServletResponse();
          
-         dispatcher.service(CreateServletRequest((ServletContext)servletContext, request), response);
+         dispatcher.service(CreateServletRequest(getServletContext(), request), response);
          channel.writeAndFlush(CreateHttpResponse(response));
        }//--------End If--------      
    }
    //---------------------------------------------------------------------------
    
-   @SuppressWarnings("deprecation")
    public static ServletRequest CreateServletRequest(ServletContext servletContext, HttpRequest request)
    {
-      QueryStringDecoder                        uriDecoder = new QueryStringDecoder(request.getUri());
+      ByteBuf content = null;
+      
+      if(request instanceof ByteBufHolder)
+         content = ((ByteBufHolder)request).content();
+      
+      return CreateServletRequest(servletContext, request.uri(), request.method().name(), GetIterator(request.headers()), ToBytes(content));
+   }
+   //---------------------------------------------------------------------------
+   
+   public static byte[] ToBytes(ByteBuf content)
+   {
+      byte[] Result = null;
+      
+      if(Assigned(content) && content.readableBytes() > 0)
+      {
+         Result = new byte[content.readableBytes()];
+         
+         content.readBytes(Result);
+      }//--------End If--------
+      
+      return Result;
+   }
+   //---------------------------------------------------------------------------
+   
+   public static ServletRequest CreateServletRequest(ServletContext servletContext, String uri, String method, Iterator<Map.Entry<String, String>> headers, byte[] content)
+   {
+      QueryStringDecoder                        uriDecoder = new QueryStringDecoder(uri);
       MockHttpServletRequest                    Result     = null;
-      Iterator<Map.Entry<String, String>>       headers    = request.headers().iterator();
       Iterator<Map.Entry<String, List<String>>> parameters = GetIterator(uriDecoder.parameters());
       
-      Result = new MockHttpServletRequest(servletContext, request.getMethod().name(), uriDecoder.path());
+      Result = new MockHttpServletRequest(servletContext, method, uriDecoder.path());
       
-      if(parameters != null)
+      if(Assigned(parameters))
       while(parameters.hasNext())
       {
          Map.Entry<String, List<String>> parameter = parameters.next();
@@ -131,7 +155,7 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
             Result.addParameter(parameter.getKey(), value.toArray(new String[value.size()]));
       }//--------End While--------
       
-      if(headers != null)
+      if(Assigned(headers))
       while(headers.hasNext())
       {
          Map.Entry<String, String> header = headers.next();
@@ -139,18 +163,8 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
          Result.addHeader(header.getKey(), header.getValue());
       }//--------End While--------
       
-      if(request instanceof ByteBufHolder)
-      {
-         ByteBuf content = ((ByteBufHolder)request).content();
-         
-         if(content.readableBytes() > 0)
-         {
-            byte[] buffer = new byte[content.readableBytes()];
-            
-            content.readBytes(buffer);
-            Result.setContent(buffer);
-         }//--------End If--------
-      }//--------End If--------
+      if(Len(content) > 0)
+         Result.setContent(content);
       
       return Result;
    }
@@ -164,7 +178,7 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
       HttpResponseStatus status  = HttpResponseStatus.valueOf(response.getStatus());
       HttpHeaders        headers = null;
       
-      if(content != null && content.length > 0)
+      if(Len(content) > 0)
          Result = new io.netty.handler.codec.http.DefaultFullHttpResponse(HttpVersion.HTTP_1_1, status, io.netty.buffer.Unpooled.wrappedBuffer(content));
       else
       {
@@ -174,7 +188,7 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
          
       headers = Result.headers();
       
-      if(names != null)
+      if(Assigned(names))
       while(names.hasNext())
       {
          String name = names.next();

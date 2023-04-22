@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.lj.web.HttpServletContext;
 import com.lj.web.IConfigurableServletServer;
 import com.lj.web.IHttpServer;
 
@@ -52,7 +53,7 @@ public class App extends HttpServlet
       IConfigurableServletServer Result = new NettyServletServer();
       
       Result.setPort(port);
-      Result.setServletContext(new org.springframework.mock.web.MockServletContext());
+      Result.setServletContext(new HttpServletContext(Result));
       Result.setDispatcher(new App());
       
       return Result;
