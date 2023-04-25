@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 LiangJ2.
+ * Copyright (c) 2023 LiangJ2.
  *
  * Licensed under the GNU General Public License v2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,58 +16,42 @@
 
 package com.test;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.lj.web.HttpServletContext;
-import com.lj.web.IConfigurableServletServer;
-import com.lj.web.IHttpServer;
-
-import com.lj.web.netty.NettyServletServer;
-
 /**
  * 
  * @author LiangJ2
  *
  */
-public class App extends HttpServlet
+@org.springframework.boot.autoconfigure.SpringBootApplication
+@org.springframework.web.bind.annotation.RestController
+public class App
 {
-   private   static final long  serialVersionUID = -1726683241907860198L;
-   protected static IHttpServer httpServer        = null;
-
-   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+   @org.springframework.beans.factory.annotation.Value("${server.port}")
+   private String port; // = "8080";
+   
+   @org.springframework.web.bind.annotation.GetMapping("/test")
+   public String test(@org.springframework.web.bind.annotation.RequestParam("name") String name)
    {
-      byte[] text = (httpServer.getPort() + " " + request.getRequestURI() + " " + request.getMethod() + ": test ok. " + request.getParameterMap()).getBytes();
-      
-      response.setContentLength(text.length);
-      response.getOutputStream().write(text);
+      return "test: port=" + port + " name=" + name;
    }
    //---------------------------------------------------------------------------
-     
-   public static IHttpServer CreateHttpServer(int port)
+   
+   @org.springframework.web.bind.annotation.GetMapping("/about")
+   public String about()
    {
-      IConfigurableServletServer Result = new NettyServletServer();
-      
-      Result.setPort(port);
-      Result.setServletContext(new HttpServletContext(Result));
-      Result.setDispatcher(new App());
-      
-      return Result;
+      return "about: netty-servlet-server 1.1.1 port=" + port;
+   }  
+   //---------------------------------------------------------------------------
+
+   @org.springframework.context.annotation.Bean
+   public org.springframework.boot.web.servlet.server.ServletWebServerFactory servletWebServerFactory()
+   {
+      return new com.lj.web.netty.springframework.boot.NettyServletWebServerFactory(Integer.parseInt(port)); 
    }
    //---------------------------------------------------------------------------
    
    public static void main(String[] args)
    {
-      httpServer = CreateHttpServer(8080);
-      
-      try
-      {
-         httpServer.start();
-      } catch(Exception e) { e.printStackTrace(); }
+      org.springframework.boot.SpringApplication.run(App.class, args);
    }
    //---------------------------------------------------------------------------
 }

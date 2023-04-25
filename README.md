@@ -9,10 +9,11 @@
 <h3>&nbsp;&nbsp;&nbsp;&nbsp;A simple servlet server based on netty framework that can be used as the web container of springboot framework, such as Tomcat, Jetty and so on.
 </h3>
 <ul>
-	<li>1.1.0 Improves the interfaces and implementation classes used in the project, prepare to become a servlet web server that can be used by springboot configurations such as Tomcat, Jetty etc.</li>
-	<li>1.0.3 Improves the interfaces and implementation classes used in the project.</li>
-	<li>1.0.2 Reorganizes the interfaces and implementation classes used in the project.</li>
-	<li>1.0.1 Implements a simple servlet server using the netty framework.</li>
+	<li><b>1.1.1</b> Implement interfaces such as ServletWebServerFactory to become a servlet web server that can be configured by springboot framework, such as Tomcat, Jetty and so on.</li>
+	<li><b>1.1.0</b> Improves the interfaces and implementation classes used in the project, prepare to become a servlet web server that can be used by springboot configurations such as Tomcat, Jetty etc.</li>
+	<li><b>1.0.3</b> Improves the interfaces and implementation classes used in the project.</li>
+	<li><b>1.0.2</b> Reorganizes the interfaces and implementation classes used in the project.</li>
+	<li><b>1.0.1</b> Implements a simple servlet server using the netty framework.</li>
 </ul>
 </body>
 </html>
