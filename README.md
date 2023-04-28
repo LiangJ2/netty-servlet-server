@@ -12,21 +12,21 @@
    @SpringBootApplication
    @RestController
    public class App
-   {   
+   {
       @GetMapping("/about")
       public String about()
       {
          return "About: netty servlet server 1.1.2";
-      }  
+      }
       //---------------------------------------------------------------------------
-   
+
       @Bean
       public ServletWebServerFactory servletWebServerFactory()
       {
-         return new NettyServletWebServerFactory(); 
+         return new NettyServletWebServerFactory();
       }
       //---------------------------------------------------------------------------
-      
+
       public static void main(String[] args)
       {
          SpringApplication.run(App.class, args);
