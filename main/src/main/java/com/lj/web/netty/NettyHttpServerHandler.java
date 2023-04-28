@@ -19,6 +19,7 @@ package com.lj.web.netty;
 import com.lj.web.IHttpHandler;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -31,9 +32,9 @@ import io.netty.handler.codec.http.HttpRequest;
  */
 public class NettyHttpServerHandler extends SimpleChannelInboundHandler<Object>
 {
-   protected IHttpHandler<HttpRequest, Channel> handler = null;
+   protected IHttpHandler<HttpRequest, Channel, ChannelFuture> handler = null;
    
-   public NettyHttpServerHandler(IHttpHandler<HttpRequest, Channel> handler)
+   public NettyHttpServerHandler(IHttpHandler<HttpRequest, Channel, ChannelFuture> handler)
    {
       this.handler = handler;
    }

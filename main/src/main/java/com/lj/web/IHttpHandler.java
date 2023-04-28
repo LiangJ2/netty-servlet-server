@@ -23,14 +23,14 @@ package com.lj.web;
  * @param <HttpRequestType> The http request type
  * @param <HttpResponseType> The http response type
  */
-public interface IHttpHandler<HttpRequestType, HttpResponseType>
+public interface IHttpHandler<HttpRequestType, HttpResponseType, ReturnType>
 {
    /**
     * Handle the given request and write to the response.
     * @param request current request
     * @param response current response
-    * @throws Exception if an error occurs
+    * @return indicates completion of request handling
     */
-   void handle(HttpRequestType request, HttpResponseType response) throws Exception;
+   ReturnType handle(HttpRequestType request, HttpResponseType response);
 }
 //======================= End Interface IHttpHandler ========================

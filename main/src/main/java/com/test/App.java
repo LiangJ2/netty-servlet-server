@@ -16,42 +16,53 @@
 
 package com.test;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.lj.web.netty.spring.boot.NettyServletWebServerFactory;
+
 /**
  * 
  * @author LiangJ2
  *
  */
-@org.springframework.boot.autoconfigure.SpringBootApplication
-@org.springframework.web.bind.annotation.RestController
+@SpringBootApplication
+@RestController
 public class App
 {
-   @org.springframework.beans.factory.annotation.Value("${server.port}")
-   private String port; // = "8080";
+   @Value("${server.port}")
+   private String port;
    
-   @org.springframework.web.bind.annotation.GetMapping("/test")
-   public String test(@org.springframework.web.bind.annotation.RequestParam("name") String name)
+   @GetMapping("/test")
+   public String test(@RequestParam("name") String name)
    {
-      return "test: port=" + port + " name=" + name;
+      return "Test: port=" + port + " name=" + name;
    }
    //---------------------------------------------------------------------------
    
-   @org.springframework.web.bind.annotation.GetMapping("/about")
+   @GetMapping("/about")
    public String about()
    {
-      return "about: netty-servlet-server 1.1.1 port=" + port;
+      return "About: netty servlet server 1.1.2 port=" + port;
    }  
    //---------------------------------------------------------------------------
 
-   @org.springframework.context.annotation.Bean
-   public org.springframework.boot.web.servlet.server.ServletWebServerFactory servletWebServerFactory()
+   @Bean
+   public ServletWebServerFactory servletWebServerFactory()
    {
-      return new com.lj.web.netty.springframework.boot.NettyServletWebServerFactory(Integer.parseInt(port)); 
+      return new NettyServletWebServerFactory(); 
    }
    //---------------------------------------------------------------------------
    
    public static void main(String[] args)
    {
-      org.springframework.boot.SpringApplication.run(App.class, args);
+      SpringApplication.run(App.class, args);
    }
    //---------------------------------------------------------------------------
 }

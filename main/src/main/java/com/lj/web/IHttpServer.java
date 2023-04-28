@@ -17,6 +17,7 @@
 package com.lj.web;
 
 import java.io.Closeable;
+import java.net.InetAddress;
 
 /**
  * The http server interface.
@@ -42,6 +43,12 @@ public interface IHttpServer extends Closeable
     * @throws Exception if the server cannot be stopped
     */
    void stop() throws Exception; 
+   
+   /**
+    * Return the specific network address that the server should bind to.
+    * @return the specific network address (defaults to {@code null})
+    */
+   InetAddress getAddress();
    
    /**
     * Return the port this http server is listening on.

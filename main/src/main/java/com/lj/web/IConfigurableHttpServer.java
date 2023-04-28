@@ -16,6 +16,8 @@
 
 package com.lj.web;
 
+import java.net.InetAddress;
+
 /**
  * A configurable {@link IHttpServer}.
  * @author LiangJ2
@@ -23,6 +25,12 @@ package com.lj.web;
  */
 public interface IConfigurableHttpServer extends IHttpServer
 {
+   /**
+    * Sets the specific network address that the server should bind to.
+    * @param address the address to set (defaults to {@code null})
+    */
+   void setAddress(InetAddress address);
+   
    /**
     * Sets the port that the http server should listen on.
     * @param port The port to set.

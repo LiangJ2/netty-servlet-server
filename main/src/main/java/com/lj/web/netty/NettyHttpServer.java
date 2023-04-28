@@ -26,11 +26,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpRequestDecoder;
+//import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,14 +46,27 @@ import com.lj.web.IHttpHandler;
  *
  */
 public class NettyHttpServer extends    ChannelInitializer<Channel>
-                             implements GenericFutureListener<Future<Void>>, IConfigurableHttpServer, IHttpHandler<HttpRequest, Channel>
+                             implements GenericFutureListener<Future<Void>>, IConfigurableHttpServer, IHttpHandler<HttpRequest, Channel, ChannelFuture>
 {
+   protected InetAddress     address     = null;
    protected int             port        = 8080;
    protected String          contextPath = "";
    protected ServerBootstrap bootstrap   = null;
    
    protected final EventLoopGroup bossGroup   = new NioEventLoopGroup();
    protected final EventLoopGroup workerGroup = new NioEventLoopGroup();
+   
+   public InetAddress getAddress()
+   {
+      return address;
+   }
+   //---------------------------------------------------------------------------
+   
+   public void setAddress(InetAddress address)
+   {
+      this.address = address;
+   }
+   //---------------------------------------------------------------------------
    
    public int getPort()
    {
@@ -115,8 +130,9 @@ public class NettyHttpServer extends    ChannelInitializer<Channel>
    //---------------------------------------------------------------------------
    
    @Override
-   public void handle(HttpRequest request, Channel channel) throws Exception
+   public ChannelFuture handle(HttpRequest request, Channel channel)
    {      
+      return null;
    }
    //---------------------------------------------------------------------------
    

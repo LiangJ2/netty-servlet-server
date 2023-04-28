@@ -34,6 +34,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
@@ -99,15 +100,32 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
    }
    //---------------------------------------------------------------------------
    
-   public void handle(HttpRequest request, Channel channel) throws Exception
-   {      
+   public ChannelFuture handle(HttpRequest request, Channel channel)
+   {
+      ChannelFuture Result = null;
+      
+      try
+      {
+         Result = Handle(getDispatcher(), getServletContext(), request, channel);
+      } catch(Exception e) { e.printStackTrace(); }
+      
+      return Result;
+   }
+   //---------------------------------------------------------------------------
+   
+   public static ChannelFuture Handle(Servlet dispatcher, ServletContext context, HttpRequest request, Channel channel) throws Exception
+   {
+      ChannelFuture Result = null;
+      
       if(Assigned(dispatcher))
       {
          MockHttpServletResponse response = new MockHttpServletResponse();
          
-         dispatcher.service(CreateServletRequest(getServletContext(), request), response);
-         channel.writeAndFlush(CreateHttpResponse(response));
-       }//--------End If--------      
+         dispatcher.service(CreateServletRequest(context, request), response);
+         Result = channel.writeAndFlush(CreateHttpResponse(response));
+      }//--------End If--------      
+      
+      return Result;
    }
    //---------------------------------------------------------------------------
    

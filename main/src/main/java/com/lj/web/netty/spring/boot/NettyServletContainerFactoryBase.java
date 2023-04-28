@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.lj.web.netty.springframework.boot;
+package com.lj.web.netty.spring.boot;
+
+import java.net.InetAddress;
 
 import com.lj.web.HttpServletContext;
 import com.lj.web.IConfigurableServletServer;
@@ -81,6 +83,18 @@ public class NettyServletContainerFactoryBase extends HttpServletContext
    {
       log(this.getClass().getSimpleName() + ": stop.");     
       servletServer.stop();
+   }
+   //---------------------------------------------------------------------------
+   
+   public InetAddress getAddress()
+   {
+      return servletServer.getAddress();
+   }
+   //---------------------------------------------------------------------------
+   
+   public void setAddress(InetAddress address)
+   {
+      servletServer.setAddress(address);
    }
    //---------------------------------------------------------------------------
    
