@@ -16,7 +16,7 @@
       @GetMapping("/about")
       public String about()
       {
-         return "About: netty servlet server 1.1.2";
+         return "About: netty servlet server 1.2.0";
       }
       //---------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@
    //============================== End Class App ==============================
 </pre>
 <ul>
+	<li><b>1.2.0</b> Supports HTTPS requests.</li>
 	<li><b>1.1.2</b> Implements some springboot configurable interfaces to configure the servlet web server.</li>
 	<li><b>1.1.1</b> Implement interfaces such as ServletWebServerFactory to become a servlet web server that can be configured by springboot framework, such as Tomcat, Jetty and so on.</li>
 	<li><b>1.1.0</b> Improves the interfaces and implementation classes used in the project, prepare to become a servlet web server that can be used by springboot configurations such as Tomcat, Jetty etc.</li>

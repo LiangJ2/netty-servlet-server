@@ -101,14 +101,15 @@ public class NettyServletWebServerFactory extends NettyServletContainerFactoryBa
    }
    //---------------------------------------------------------------------------
    
-   @Override
-   public void setErrorPages(Set<? extends ErrorPage> errorPages)
+   public void setSsl(Ssl ssl)
    {
-      // TODO Auto-generated method stub
+      if(ssl.isEnabled())
+         setSsl(ssl.getProtocol(), ssl.getKeyStoreType(), ssl.getKeyStore(), ssl.getKeyStorePassword(), ssl.getKeyPassword(), ssl.getKeyAlias());      
    }
    //---------------------------------------------------------------------------
    
-   public void setSsl(Ssl ssl)
+   @Override
+   public void setErrorPages(Set<? extends ErrorPage> errorPages)
    {
       // TODO Auto-generated method stub
    }

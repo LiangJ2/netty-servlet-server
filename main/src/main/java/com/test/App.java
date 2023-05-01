@@ -49,7 +49,7 @@ public class App
    @GetMapping("/about")
    public String about()
    {
-      return "About: netty servlet server 1.1.2 port=" + port;
+      return "About: netty servlet server 1.2.0 port=" + port;
    }  
    //---------------------------------------------------------------------------
 

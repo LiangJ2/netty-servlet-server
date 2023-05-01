@@ -17,6 +17,7 @@
 package com.lj.web.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -28,14 +29,24 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 //import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.security.KeyStore;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLEngine;
+
+import org.springframework.util.ResourceUtils;
 
 import com.lj.web.IConfigurableHttpServer;
 import com.lj.web.IHttpHandler;
@@ -50,11 +61,53 @@ public class NettyHttpServer extends    ChannelInitializer<Channel>
 {
    protected InetAddress     address     = null;
    protected int             port        = 8080;
-   protected String          contextPath = "";
+   protected SslContext      sslContext  = null;
+   protected String          contextPath = "", sslProtocol = null;
    protected ServerBootstrap bootstrap   = null;
    
    protected final EventLoopGroup bossGroup   = new NioEventLoopGroup();
    protected final EventLoopGroup workerGroup = new NioEventLoopGroup();
+   
+   public SslContext createSSLContext(KeyStore keyStore, String keyPass, String keyAlias)
+   {
+      return CreateSSLContext(getSslProtocol(), keyStore, keyPass, keyAlias);
+   }
+   //---------------------------------------------------------------------------
+   
+   public void setSsl(String sslProtocol, String keystoreType, String keystorePath, String keystorePassword, String keyPass, String keyAlias)
+   {
+      KeyStore keyStore = LoadKeyStore(keystoreType, keystorePath, keystorePassword);
+      
+      setSslProtocol(sslProtocol);
+      setSslContext(createSSLContext(keyStore, keyPass, keyAlias));
+      
+      log("setSsl: " + keystorePath);
+   }
+   //---------------------------------------------------------------------------
+   
+   public String getSslProtocol()
+   {
+      return sslProtocol;
+   }
+   //---------------------------------------------------------------------------
+
+   public void setSslProtocol(String sslProtocol)
+   {
+      this.sslProtocol = sslProtocol;
+   }
+   //---------------------------------------------------------------------------
+   
+   public SslContext getSslContext()
+   {
+      return sslContext;
+   }
+   //---------------------------------------------------------------------------
+   
+   public void setSslContext(SslContext sslContext)
+   {
+      this.sslContext = sslContext;
+   }
+   //---------------------------------------------------------------------------
    
    public InetAddress getAddress()
    {
@@ -138,6 +191,11 @@ public class NettyHttpServer extends    ChannelInitializer<Channel>
    
    protected void doInitChannel(Channel ch)
    {
+      SslHandler sslHandler = CreateSslHandler(sslContext, sslProtocol, ch.alloc());
+      
+      if(Assigned(sslHandler))
+         ch.pipeline().addLast("ssl", sslHandler);
+      
       ch.pipeline().addLast("http-decoder", new HttpRequestDecoder());
       ch.pipeline().addLast("http-aggregator", new HttpObjectAggregator(Integer.MAX_VALUE));
       ch.pipeline().addLast("http-encoder", new HttpResponseEncoder());
@@ -250,6 +308,82 @@ public class NettyHttpServer extends    ChannelInitializer<Channel>
       if(Assigned(src))
          return GetIterator(src.entrySet());
       return null;
+   }
+   //---------------------------------------------------------------------------
+   
+   public static KeyStore LoadKeyStore(String keystoreType, String keystorePath, String keystorePassword)
+   {
+      KeyStore    Result = null;
+      InputStream is     = null; 
+      
+      if(Len(keystoreType) > 0 && Len(keystorePath) > 0 && Len(keystorePassword) > 0)
+      try
+      {
+         Result = KeyStore.getInstance(Len(keystoreType) == 0 ? "JKS" : keystoreType);
+         is     = ResourceUtils.getURL(keystorePath).openStream();
+         
+         Result.load(is, keystorePassword.toCharArray());
+      } catch(Exception e) { e.printStackTrace(); }
+
+      if(Assigned(is))
+      try
+      {
+         is.close();
+      } catch(IOException e) { e.printStackTrace(); }
+      
+      return Result;
+   }
+   //---------------------------------------------------------------------------
+   
+   public static KeyManagerFactory GetKeyManagerFactory(KeyStore keyStore, String keyPass)
+   {
+      KeyManagerFactory Result = null;
+      
+      if(keyStore != null && Len(keyPass) > 0)
+      try
+      {
+         Result = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+         
+         Result.init(keyStore, keyPass.toCharArray());
+      } catch(Exception e) { e.printStackTrace(); }
+      
+      return Result;
+   }
+   //---------------------------------------------------------------------------
+   
+   public static SslContext CreateSSLContext(String sslProtocol, KeyStore keyStore, String keyPass, String keyAlias)
+   {
+      SslContext Result = null;
+      
+      if(Len(sslProtocol) > 0 &&  Assigned(keyStore) && Len(keyPass) > 0)
+      try
+      {
+         Result = SslContextBuilder.forServer(GetKeyManagerFactory(keyStore, keyPass)).protocols(sslProtocol).build();
+      } catch(Exception e) { e.printStackTrace(); }
+      
+      return Result;
+   }
+   //---------------------------------------------------------------------------   
+
+   public static SslHandler CreateSslHandler(SslContext sslContext, String sslProtocol, ByteBufAllocator alloc)
+   {
+      SSLEngine Result = null;
+      
+      if(Assigned(sslContext))
+      {
+         if(Assigned(alloc))
+            Result = sslContext.newEngine(alloc);
+         
+         if(Assigned(Result) && Len(sslProtocol) > 0)
+            Result.setEnabledProtocols(new String[] {sslProtocol});
+         
+         if(Assigned(Result))
+            Result.setNeedClientAuth(false);
+      }//--------End If--------
+      
+      if(IsNull(Result))
+         return null;
+      return new SslHandler(Result);
    }
    //---------------------------------------------------------------------------
 }

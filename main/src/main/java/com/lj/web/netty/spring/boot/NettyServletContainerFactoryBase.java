@@ -18,8 +18,11 @@ package com.lj.web.netty.spring.boot;
 
 import java.net.InetAddress;
 
+import javax.servlet.Servlet;
+
 import com.lj.web.HttpServletContext;
 import com.lj.web.IConfigurableServletServer;
+import com.lj.web.netty.NettyHttpServer;
 import com.lj.web.netty.NettyServletServer;
 
 /**
@@ -109,5 +112,24 @@ public class NettyServletContainerFactoryBase extends HttpServletContext
       servletServer.setPort(port);
    }
    //---------------------------------------------------------------------------  
+
+   public Servlet getDispatcher()
+   {
+      return servletServer.getDispatcher();
+   }
+   //---------------------------------------------------------------------------
+
+   public void setDispatcher(Servlet dispatcher)
+   {
+      servletServer.setDispatcher(dispatcher);
+   }
+   //---------------------------------------------------------------------------
+   
+   public void setSsl(String sslProtocol, String keystoreType, String keystorePath, String keystorePassword, String keyPass, String keyAlias)
+   {
+      if(servletServer instanceof NettyHttpServer)
+         ((NettyHttpServer)servletServer).setSsl(sslProtocol, keystoreType, keystorePath, keystorePassword, keyPass, keyAlias);
+   }
+   //---------------------------------------------------------------------------
 }
 //================ End Class NettyServletContainerFactoryBase ===============

@@ -104,6 +104,7 @@ public class NettyServletServer extends NettyHttpServer implements IConfigurable
    {
       ChannelFuture Result = null;
       
+      if(Assigned(request))
       try
       {
          Result = Handle(getDispatcher(), getServletContext(), request, channel);
